@@ -39,7 +39,12 @@ func FxOptions() fx.Option {
 		fx.Provide(func(writer *lokikit.LokiWriter) (*slog.Logger, error) {
 			logger, err := logkit.New(nil)
 			if handler, ok := logger.Handler().(*logkit.TeeHandler); ok {
-				handler.AppendHandlers(handler.HandlerOptions().NewJSONHandler(writer))
+				var leveler logkit.LevelEnablerFunc = func(level slog.Level) bool {
+					return true
+				}
+				handler.AppendHandlers(logkit.NewLevelHandler(
+					leveler, handler.HandlerOptions().NewJSONHandler(writer),
+				))
 			}
 			return logger, err
 		}),
