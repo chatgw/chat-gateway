@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -47,19 +47,22 @@ func (p *Proxy) Start() error {
 			fmt.Fprintf(w, "pong")
 		})
 		r.HandleFunc("/openai/*", func(w http.ResponseWriter, r *http.Request) {
-			token := fmt.Sprintf("Bearer %s", os.Getenv("CHATGW_TOKEN"))
-			if r.Header.Get("Authorization") != token {
-				fmt.Fprintf(w, "token error")
-				return
-			}
+			// token := fmt.Sprintf("Bearer %s", os.Getenv("CHATGW_TOKEN"))
+			// if r.Header.Get("Authorization") != token {
+			// 	fmt.Fprintf(w, "token error")
+			// 	return
+			// }
+			token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 
-			logEntry := p.deps.Logger.With("uri", r.URL.String())
+			logEntry := p.deps.Logger.
+				With("uri", r.URL.String()).
+				With("token", token)
 
 			client := resty.New()
 			uri := fmt.Sprintf("https://api.openai.com/%s", chi.URLParam(r, "*"))
 
 			request := client.R().
-				SetAuthToken(os.Getenv("OPENAI_KEY")).
+				SetAuthToken(token).
 				SetQueryString(r.URL.RawQuery)
 
 			rDumper := bytes.NewBuffer(nil)
