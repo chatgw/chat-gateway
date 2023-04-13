@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	sensitivemod "github.com/airdb/chat-gateway/modules/sensitive"
 	"log"
 
 	"github.com/airdb/chat-gateway/bootstrap"
@@ -28,6 +29,7 @@ func main() {
 	app := fx.New(
 		telemetrymod.FxOptions(),
 		bootstrap.FxOptions(),
+		sensitivemod.FxOptions(),
 		fx.Invoke(func(lc fx.Lifecycle, deps invokeDeps) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {

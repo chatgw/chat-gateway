@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	sensitivemod "github.com/airdb/chat-gateway/modules/sensitive"
 	"io"
 	"net/http"
 	"strings"
@@ -20,7 +21,8 @@ import (
 type proxyDeps struct {
 	fx.In
 
-	Logger *slog.Logger
+	Logger  *slog.Logger
+	Checker *sensitivemod.Checker
 }
 
 type Proxy struct {
