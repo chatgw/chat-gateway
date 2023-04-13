@@ -36,9 +36,9 @@ func NewChecker() (*Checker, error) {
 		return nil, errors.New("Bad checker type:" + checkerType)
 	}
 	return &Checker{checker: search}, nil
+
 }
 
 func (c *Checker) HasSense(s []byte) bool {
-	log.Println(c.checker.Find(s))
 	return c.checker.HasSens(s)
 }
