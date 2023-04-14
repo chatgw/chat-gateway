@@ -1,6 +1,7 @@
 package sensitivemod
 
 import (
+	"errors"
 	"github.com/king133134/sensfilter"
 	"log"
 	"os"
@@ -11,7 +12,7 @@ type Checker struct {
 	checker *sensfilter.Search
 }
 
-func NewChecker() *Checker {
+func NewChecker() (*Checker, error) {
 	checkerType := os.Getenv("SENSITIVE_TYPE")
 	log.Println("Checker Type:" + checkerType)
 	var search *sensfilter.Search
@@ -22,9 +23,9 @@ func NewChecker() *Checker {
 		search = sensfilter.Strings(wordArray)
 	default:
 		log.Println("Bad checker type")
-		return nil
+		return nil, errors.New("Bad checker type:" + checkerType)
 	}
-	return &Checker{checker: search}
+	return &Checker{checker: search}, nil
 }
 
 func (c *Checker) HasSense(s []byte) bool {
