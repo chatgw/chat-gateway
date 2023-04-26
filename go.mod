@@ -12,6 +12,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/hanyuancheung/gpt-go v0.0.3
 	github.com/joho/godotenv v1.5.1
+	github.com/king133134/sensfilter v0.3.1
 	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.6
 	github.com/samber/lo v1.38.1
