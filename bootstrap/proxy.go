@@ -79,6 +79,15 @@ func (p *Proxy) Start() error {
 			p.parseBody(logEntry, resp.Body()).Debug("response body")
 			w.Write(resp.Body())
 		})
+		r.HandleFunc("/sensitive", func(w http.ResponseWriter, r *http.Request) {
+			log := p.deps.Logger.With("uri", r.URL.String())
+
+			defer r.Body.Close()
+			body, _ := io.ReadAll(r.Body)
+			log.Debug("Get body:" + string(body))
+			result := p.deps.Checker.HasSense(body)
+			fmt.Fprintf(w, "check result:"+fmt.Sprintf("%v", result))
+		})
 	})
 
 	p.server = &http.Server{Addr: ":30120", Handler: p.mux}
@@ -87,8 +96,8 @@ func (p *Proxy) Start() error {
 	return p.server.ListenAndServe()
 }
 
-func (w *Proxy) Stop() error {
-	return w.server.Shutdown(context.TODO())
+func (p *Proxy) Stop() error {
+	return p.server.Shutdown(context.TODO())
 }
 
 func (p *Proxy) parseBody(logEntry *slog.Logger, body []byte) *slog.Logger {
