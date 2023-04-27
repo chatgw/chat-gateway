@@ -30,7 +30,6 @@ func NewChecker() (*Checker, error) {
 			log.Println("Search init error")
 			return nil, err
 		}
-
 	default:
 		log.Println("Bad checker type")
 		return nil, errors.New("Bad checker type:" + checkerType)
