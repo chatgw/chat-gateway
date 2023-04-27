@@ -40,5 +40,6 @@ func NewChecker() (*Checker, error) {
 }
 
 func (c *Checker) HasSense(s []byte) bool {
+	log.Println(c.checker.Find(s))
 	return c.checker.HasSens(s)
 }
