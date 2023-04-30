@@ -11,17 +11,17 @@ import "validate/validate.proto";
 
 option go_package = "github.com/airdb/chat-gateway/gen/go/chatgw/v1;systemv1";
 option java_multiple_files = true;
-option java_outer_classname = "OpenAIServiceProto";
+option java_outer_classname = "AzureServiceProto";
 option java_package = "com.airdb.chatgw.v1";
 
 service OpenAIService {
   option (google.api.default_host) = "chatgw.airdb.com";
-  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {description: "Azure OpenAI Service -- which used to interacitve with openai."};
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {description: "OpenAI Service -- which used to interacitve with openai."};
 
-  // OpenAIProxy
-  rpc OpenAIProxy(OpenAIProxyRequest) returns (OpenAIProxyResponse) {
+  // AzureProxy
+  rpc AzureProxy(AzureProxyRequest) returns (AzureProxyResponse) {
     option (google.api.http) = {
-      post: "/v1/openai/{name=*}"
+      post: "/v1/azure/{name=*}"
       body: "payload"
       response_body: "data"
     };
@@ -29,7 +29,7 @@ service OpenAIService {
   }
 }
 
-message OpenAIProxyRequest {
+message AzureProxyRequest {
   // The uri of the openai.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -39,6 +39,6 @@ message OpenAIProxyRequest {
   map<string, google.protobuf.Any> payload = 2;
 }
 
-message OpenAIProxyResponse {
+message AzureProxyResponse {
   google.protobuf.Any data = 4;
 }

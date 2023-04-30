@@ -7,16 +7,14 @@ RUN go build ./cmd/chatgw
 
 
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM alpine:latest
-WORKDIR /output
+FROM airdb/base:latest
+
+WORKDIR /app
 RUN apk update && apk add ca-certificates iptables ip6tables && rm -rf /var/cache/apk/*
 
 # Copy binary to production image
-COPY --from=builder /src/.env.example ./.env
-COPY --from=builder /src/build/start.sh ./start.sh
-COPY --from=builder /src/chatgw ./chatgw
-RUN chmod +x ./start.sh
+COPY --from=builder /src/chatgw /app/chatgw
 
 # Run on container startup.
 EXPOSE 30120
-ENTRYPOINT ["/output/start.sh"]
+ENTRYPOINT ["/app/chatgw"]
