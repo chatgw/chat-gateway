@@ -74,7 +74,7 @@ func (p *Proxy) Start() error {
 			if len(skey) < 40 {
 				validSkeys := os.Getenv("CHATGW_TOKEN")
 				if strings.Contains(validSkeys, skey) {
-					skey = os.Getenv("OPENAI_SKEY")
+					skey = os.Getenv("OPENAI_KEY")
 				}
 			}
 
