@@ -63,11 +63,19 @@ func (p *Proxy) Start() error {
 		r.HandleFunc("/sensitive", func(w http.ResponseWriter, r *http.Request) {
 			log := p.deps.Logger.With("uri", r.URL.String())
 
-			defer r.Body.Close()
-			body, _ := io.ReadAll(r.Body)
-			log.Debug("Get body:" + string(body))
-			result := p.deps.Checker.HasSense(body)
+			search := r.URL.Query().Get("s")
+			if search == "" {
+				w.Write([]byte("s(search) is empty"))
+				return
+			}
+			/*
+				defer r.Body.Close()
+				body, _ := io.ReadAll(r.Body)
+			*/
+			log.Debug("Get :" + search)
+			result := p.deps.Checker.HasSense([]byte(search))
 			fmt.Fprintf(w, "check result:"+fmt.Sprintf("%v", result))
+
 		})
 		r.HandleFunc("/openai/*", func(w http.ResponseWriter, r *http.Request) {
 			skey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
