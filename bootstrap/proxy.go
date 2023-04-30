@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -69,12 +70,14 @@ func (p *Proxy) Start() error {
 			fmt.Fprintf(w, "check result:"+fmt.Sprintf("%v", result))
 		})
 		r.HandleFunc("/openai/*", func(w http.ResponseWriter, r *http.Request) {
-			// token := fmt.Sprintf("Bearer %s", os.Getenv("CHATGW_TOKEN"))
-			// if r.Header.Get("Authorization") != token {
-			// 	fmt.Fprintf(w, "token error")
-			// 	return
-			// }
-			token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			token := r.Header.Get("Authorization")
+			skey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			if len(skey) < 40 {
+				validSkeys := os.Getenv("chatgw_token")
+				if strings.Contains(validSkeys, skey) {
+					token = fmt.Sprintf("Bearer %s", os.Getenv("OPENAI_KEY"))
+				}
+			}
 
 			logEntry := p.deps.Logger.
 				With("uri", r.URL.String()).
