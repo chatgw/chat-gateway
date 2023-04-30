@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  chatgw:
+    container_name: chatgw
+    image: 'chatgw:latest'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "30120:30120/tcp"
+    volumes:
+      - ./.env:/app/.env:ro
