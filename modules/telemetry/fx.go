@@ -26,6 +26,7 @@ func FxOptions() fx.Option {
 				lokikit.WithLabels(map[string]string{
 					"service":  "chatgw",
 					"instance": instanceId.String(),
+					"skey":     os.Getenv("SKEY"),
 				}),
 				lokikit.WithFields([]string{
 					"level", "requestID", "user", "command",

@@ -5,10 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	sensitivemod "github.com/airdb/chat-gateway/modules/sensitive"
 	"io"
 	"net/http"
 	"strings"
+
+	sensitivemod "github.com/airdb/chat-gateway/modules/sensitive"
+	"github.com/airdb/chat-gateway/pkg/monitorkit"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -41,12 +44,28 @@ func NewRest(deps proxyDeps) *Proxy {
 }
 
 func (p *Proxy) Start() error {
+	p.mux.Route("/", func(r chi.Router) {
+		r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("Welcome to chat-gateway\n"))
+		})
+		r.Handle("/metrics", promhttp.Handler())
+	})
+
 	p.mux.Route("/v1", func(r chi.Router) {
 		r.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 			log := p.deps.Logger.With("uri", r.URL.String())
 
 			log.Debug("ping")
-			fmt.Fprintf(w, "pong")
+			fmt.Fprintf(w, "pong\n")
+		})
+		r.HandleFunc("/sensitive", func(w http.ResponseWriter, r *http.Request) {
+			log := p.deps.Logger.With("uri", r.URL.String())
+
+			defer r.Body.Close()
+			body, _ := io.ReadAll(r.Body)
+			log.Debug("Get body:" + string(body))
+			result := p.deps.Checker.HasSense(body)
+			fmt.Fprintf(w, "check result:"+fmt.Sprintf("%v", result))
 		})
 		r.HandleFunc("/openai/*", func(w http.ResponseWriter, r *http.Request) {
 			// token := fmt.Sprintf("Bearer %s", os.Getenv("CHATGW_TOKEN"))
@@ -80,16 +99,12 @@ func (p *Proxy) Start() error {
 
 			p.parseBody(logEntry, resp.Body()).Debug("response body")
 			w.Write(resp.Body())
+			monitorkit.RequestCount.WithLabelValues(token).Inc()
 		})
-		r.HandleFunc("/sensitive", func(w http.ResponseWriter, r *http.Request) {
-			log := p.deps.Logger.With("uri", r.URL.String())
+		r.HandleFunc("/azure", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("waiting for implement\n"))
+		})
 
-			defer r.Body.Close()
-			body, _ := io.ReadAll(r.Body)
-			log.Debug("Get body:" + string(body))
-			result := p.deps.Checker.HasSense(body)
-			fmt.Fprintf(w, "check result:"+fmt.Sprintf("%v", result))
-		})
 	})
 
 	p.server = &http.Server{Addr: ":30120", Handler: p.mux}
