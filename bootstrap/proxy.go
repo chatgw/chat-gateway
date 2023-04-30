@@ -73,7 +73,7 @@ func (p *Proxy) Start() error {
 			token := r.Header.Get("Authorization")
 			skey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 			if len(skey) < 40 {
-				validSkeys := os.Getenv("chatgw_token")
+				validSkeys := os.Getenv("CHATGW_TOKEN")
 				if strings.Contains(validSkeys, skey) {
 					token = fmt.Sprintf("Bearer %s", os.Getenv("OPENAI_KEY"))
 				}
