@@ -71,14 +71,13 @@ func (p *Proxy) Start() error {
 		})
 		r.HandleFunc("/openai/*", func(w http.ResponseWriter, r *http.Request) {
 			skey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+			token := skey
 			if len(skey) < 40 {
 				validSkeys := os.Getenv("CHATGW_TOKEN")
 				if strings.Contains(validSkeys, skey) {
-					skey = os.Getenv("OPENAI_KEY")
+					token = os.Getenv("OPENAI_KEY")
 				}
 			}
-
-			token := skey
 
 			logEntry := p.deps.Logger.
 				With("uri", r.URL.String()).
@@ -107,8 +106,8 @@ func (p *Proxy) Start() error {
 
 			len, _ := strconv.ParseFloat(string(resp.Body()), 8)
 
-			monitorkit.GPTRequestCount.WithLabelValues(token).Inc()
-			monitorkit.GTPTokenCont.WithLabelValues(token).Add(len)
+			monitorkit.GPTRequestCount.WithLabelValues(skey).Inc()
+			monitorkit.GTPTokenCont.WithLabelValues(skey).Add(len)
 		})
 		r.HandleFunc("/azure", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("waiting for implement\n"))
