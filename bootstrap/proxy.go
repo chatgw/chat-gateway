@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 
 	sensitivemod "github.com/airdb/chat-gateway/modules/sensitive"
@@ -99,7 +100,11 @@ func (p *Proxy) Start() error {
 
 			p.parseBody(logEntry, resp.Body()).Debug("response body")
 			w.Write(resp.Body())
-			monitorkit.RequestCount.WithLabelValues(token).Inc()
+
+			len, _ := strconv.ParseFloat(string(resp.Body()), 8)
+
+			monitorkit.GPTRequestCount.WithLabelValues(token).Inc()
+			monitorkit.GTPTokenCont.WithLabelValues(token).Add(len)
 		})
 		r.HandleFunc("/azure", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("waiting for implement\n"))
