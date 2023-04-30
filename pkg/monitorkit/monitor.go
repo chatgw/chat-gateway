@@ -7,7 +7,7 @@ import (
 
 var RequestCount = promauto.NewCounterVec(
 	prometheus.CounterOpts{
-		Name: "http_requests_total",
+		Name: "chatgw_gtp_requests_total",
 		Help: "Total number of HTTP requests by status code and method.",
 	},
 	[]string{"skey"},
