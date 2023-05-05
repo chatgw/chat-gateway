@@ -6,11 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 
+	"github.com/airdb/chat-gateway/modules/openaimod"
 	sensitivemod "github.com/airdb/chat-gateway/modules/sensitive"
 	"github.com/airdb/chat-gateway/pkg/monitorkit"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -112,10 +113,21 @@ func (p *Proxy) Start() error {
 			p.parseBody(logEntry, resp.Body()).Debug("response body")
 			w.Write(resp.Body())
 
-			len, _ := strconv.ParseFloat(string(resp.Body()), 8)
-
 			monitorkit.GPTRequestCount.WithLabelValues(skey).Inc()
-			monitorkit.GTPTokenCont.WithLabelValues(skey).Add(len)
+
+			var chatGPTResp openaimod.ChatGPTResp
+
+			err = json.Unmarshal(resp.Body(), &chatGPTResp)
+			if err != nil {
+				log.Println()
+				return
+			}
+
+			log.Println("token count", chatGPTResp.Usage.TotalTokens)
+
+			monitorkit.GTPTokenCont.WithLabelValues(skey).Add(float64(chatGPTResp.Usage.TotalTokens))
+			monitorkit.GTPPromptTokens.WithLabelValues(skey).Add(float64(chatGPTResp.Usage.PromptTokens))
+			monitorkit.GTPCompletionTokens.WithLabelValues(skey).Add(float64(chatGPTResp.Usage.CompletionTokens))
 		})
 		r.HandleFunc("/azure", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("waiting for implement\n"))
