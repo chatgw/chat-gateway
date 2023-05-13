@@ -6,5 +6,8 @@ import (
 )
 
 func Migrate(conn *gorm.DB) {
-	conn.Migrator().AutoMigrate(&schema.User{})
+	conn.Migrator().AutoMigrate(
+		&schema.Key{},
+		&schema.User{},
+	)
 }

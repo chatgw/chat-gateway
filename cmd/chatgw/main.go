@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/airdb/chat-gateway/apps/chatgw"
+	"github.com/airdb/chat-gateway/modules/proxymod"
 	sensitivemod "github.com/airdb/chat-gateway/modules/sensitive"
 
 	"github.com/airdb/chat-gateway/bootstrap"
@@ -25,7 +26,7 @@ func main() {
 		fx.In
 
 		LokiWriter *lokikit.LokiWriter
-		Rest       *bootstrap.Proxy
+		Proxy      *proxymod.Proxy
 	}
 
 	app := fx.New(
@@ -36,13 +37,13 @@ func main() {
 		fx.Invoke(func(lc fx.Lifecycle, deps invokeDeps) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					go deps.Rest.Start()
+					go deps.Proxy.Start()
 					log.Println("Press Ctrl+C to exit")
 					return nil
 				},
 				OnStop: func(ctx context.Context) error {
 					deps.LokiWriter.Shutdown()
-					return errors.Join(deps.Rest.Stop())
+					return errors.Join(deps.Proxy.Stop())
 				},
 			})
 		}),

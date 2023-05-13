@@ -11,8 +11,8 @@ type UserRepo struct {
 	Conn *gorm.DB
 }
 
-func NewUserRepo() *UserRepo {
-	return &UserRepo{}
+func NewUserRepo(conn *gorm.DB) *UserRepo {
+	return &UserRepo{conn}
 }
 
 func (r UserRepo) Create(ctx context.Context, entity *schema.User) error {
