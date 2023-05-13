@@ -9,3 +9,7 @@ type Key struct {
 	Vendor string // openai azure
 	Token  string
 }
+
+func (Key) TableName() string {
+	return "tbl_keys"
+}

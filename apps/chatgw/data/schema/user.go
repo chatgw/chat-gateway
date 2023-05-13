@@ -8,3 +8,7 @@ type User struct {
 	LoginName string
 	Password  string
 }
+
+func (User) TableName() string {
+	return "tbl_users"
+}
