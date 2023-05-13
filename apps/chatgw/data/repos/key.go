@@ -21,6 +21,6 @@ func (r KeyRepo) Create(ctx context.Context, entity *schema.Key) error {
 
 func (r KeyRepo) First(ctx context.Context, key string) (*schema.Key, error) {
 	dst := &schema.Key{}
-	err := r.Conn.Where("key", key).First(dst).Error
+	err := r.Conn.Where("`key`", key).First(dst).Error
 	return dst, err
 }
