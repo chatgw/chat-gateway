@@ -20,14 +20,16 @@ func (deps registerDeps) HandleOpenai(w http.ResponseWriter, r *http.Request) {
 	skey := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	token := skey
 
-	key, err := deps.KeyRepo.First(r.Context(), skey)
-	if err == nil && key != nil {
-		token = os.Getenv("OPENAI_KEY")
-	}
-
 	logEntry := deps.Logger.
 		With("uri", r.URL.String()).
 		With("token", token)
+
+	key, err := deps.KeyRepo.First(r.Context(), token)
+
+	logEntry.Error("error key", skey, key)
+	if err == nil && key != nil {
+		token = os.Getenv("OPENAI_KEY")
+	}
 
 	client := resty.New()
 	uri := fmt.Sprintf("https://api.openai.com/%s", chi.URLParam(r, "*"))
