@@ -1,15 +1,13 @@
 module github.com/airdb/chat-gateway
 
-go 1.20
+go 1.21
 
 require (
-	github.com/envoyproxy/protoc-gen-validate v1.0.0
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/render v1.0.2
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofrs/uuid v4.4.0+incompatible
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/hanyuancheung/gpt-go v0.0.3
 	github.com/joho/godotenv v1.5.1
 	github.com/king133134/sensfilter v0.3.1
@@ -19,10 +17,9 @@ require (
 	github.com/samber/lo v1.38.1
 	go.uber.org/fx v1.19.2
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
-	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
-	google.golang.org/grpc v1.54.0
-	google.golang.org/protobuf v1.30.0
 )
+
+require google.golang.org/protobuf v1.30.0 // indirect
 
 require (
 	github.com/ajg/form v1.5.1 // indirect
@@ -52,11 +49,11 @@ require (
 	go.uber.org/dig v1.16.1 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.23.0 // indirect
-	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.8.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.4.7 // indirect
-	gorm.io/gorm v1.24.6 // indirect
+	gorm.io/driver/mysql v1.4.7
+	gorm.io/gorm v1.24.6
 )
